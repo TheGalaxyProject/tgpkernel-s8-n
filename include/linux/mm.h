@@ -1314,6 +1314,8 @@ static inline bool vma_is_anonymous(struct vm_area_struct *vma)
 	return !vma->vm_ops;
 }
 
+int vma_is_stack_for_task(struct vm_area_struct *vma, struct task_struct *t);
+
 extern struct task_struct *task_of_stack(struct task_struct *task,
 				struct vm_area_struct *vma, bool in_group);
 

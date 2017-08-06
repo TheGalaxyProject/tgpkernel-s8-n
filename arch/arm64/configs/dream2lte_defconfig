@@ -1,0 +1,8 @@
+
+#
+# Modifications for Samsung Galaxy S8+ (dream2lte)
+#
+CONFIG_RKP_6G=y
+CONFIG_CAMERA_CIS_3M3_OBJ=y
+CONFIG_CAMERA_DREAM2=y
+CONFIG_SENSORS_HRM_ADPD143=y

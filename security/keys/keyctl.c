@@ -26,6 +26,12 @@
 #include <asm/uaccess.h>
 #include "internal.h"
 
+#ifdef CONFIG_KEYS_SUPPORT_STLOG
+#include <linux/stlog.h>
+#else
+#define ST_LOG(fmt,...)
+#endif
+
 #define KEY_MAX_DESC_SIZE 4096
 
 static int key_get_type_from_user(char *type,
@@ -132,6 +138,13 @@ SYSCALL_DEFINE5(add_key, const char __user *, _type,
 	else {
 		ret = PTR_ERR(key_ref);
 	}
+
+	ST_LOG("<keyctl> add_key %s(%ld). type: %s, desc: %s\n",
+		(ret < 0)? "failed":"succeeded", (ret < 0)? ret:0, type,
+		description? description:"null");
+	printk(KERN_ERR "<keyctl> add_key %s(%ld). type: %s, desc: %s\n",
+		(ret < 0)? "failed":"succeeded", (ret < 0)? ret:0, type,
+		description? description:"null");
 
 	key_ref_put(keyring_ref);
  error3:
@@ -1223,8 +1236,8 @@ error:
  * Read or set the default keyring in which request_key() will cache keys and
  * return the old setting.
  *
- * If a process keyring is specified then this will be created if it doesn't
- * yet exist.  The old setting will be returned if successful.
+ * If a thread or process keyring is specified then it will be created if it
+ * doesn't yet exist.  The old setting will be returned if successful.
  */
 long keyctl_set_reqkey_keyring(int reqkey_defl)
 {
@@ -1249,11 +1262,8 @@ long keyctl_set_reqkey_keyring(int reqkey_defl)
 
 	case KEY_REQKEY_DEFL_PROCESS_KEYRING:
 		ret = install_process_keyring_to_cred(new);
-		if (ret < 0) {
-			if (ret != -EEXIST)
-				goto error;
-			ret = 0;
-		}
+		if (ret < 0)
+			goto error;
 		goto set;
 
 	case KEY_REQKEY_DEFL_DEFAULT:

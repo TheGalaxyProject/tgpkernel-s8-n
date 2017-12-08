@@ -124,8 +124,7 @@ struct iv_tcw_private {
  * and encrypts / decrypts at the same time.
  */
 enum flags { DM_CRYPT_SUSPENDED, DM_CRYPT_KEY_VALID,
-	     DM_CRYPT_SAME_CPU, DM_CRYPT_NO_OFFLOAD,
-	     DM_CRYPT_EXIT_THREAD};
+	     DM_CRYPT_SAME_CPU, DM_CRYPT_NO_OFFLOAD };
 
 /*
  * The fields in here must be read only after initialization.
@@ -1253,18 +1252,20 @@ continue_locked:
 		if (!RB_EMPTY_ROOT(&cc->write_tree))
 			goto pop_from_list;
 
-		if (unlikely(test_bit(DM_CRYPT_EXIT_THREAD, &cc->flags))) {
-			spin_unlock_irq(&cc->write_thread_wait.lock);
-			break;
-		}
-
-		__set_current_state(TASK_INTERRUPTIBLE);
+		set_current_state(TASK_INTERRUPTIBLE);
 		__add_wait_queue(&cc->write_thread_wait, &wait);
 
 		spin_unlock_irq(&cc->write_thread_wait.lock);
 
+		if (unlikely(kthread_should_stop())) {
+			set_task_state(current, TASK_RUNNING);
+			remove_wait_queue(&cc->write_thread_wait, &wait);
+			break;
+		}
+
 		schedule();
 
+		set_task_state(current, TASK_RUNNING);
 		spin_lock_irq(&cc->write_thread_wait.lock);
 		__remove_wait_queue(&cc->write_thread_wait, &wait);
 		goto continue_locked;
@@ -1592,12 +1593,15 @@ static int crypt_set_key(struct crypt_config *cc, char *key)
 	if (!cc->key_size && strcmp(key, "-"))
 		goto out;
 
+	/* clear the flag since following operations may invalidate previously valid key */
+	clear_bit(DM_CRYPT_KEY_VALID, &cc->flags);
+
 	if (cc->key_size && crypt_decode_key(cc->key, key, cc->key_size) < 0)
 		goto out;
 
-	set_bit(DM_CRYPT_KEY_VALID, &cc->flags);
-
 	r = crypt_setkey_allcpus(cc);
+	if (!r)
+		set_bit(DM_CRYPT_KEY_VALID, &cc->flags);
 
 out:
 	/* Hex key string not needed after here, so wipe it. */
@@ -1631,10 +1635,6 @@ static void crypt_dtr(struct dm_target *ti)
 
 	if (!cc->hw_fmp) {
 		if (cc->write_thread) {
-			spin_lock_irq(&cc->write_thread_wait.lock);
-			set_bit(DM_CRYPT_EXIT_THREAD, &cc->flags);
-			wake_up_locked(&cc->write_thread_wait);
-			spin_unlock_irq(&cc->write_thread_wait.lock);
 			kthread_stop(cc->write_thread);
 		}
 

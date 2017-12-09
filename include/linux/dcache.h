@@ -624,5 +624,4 @@ static inline struct inode *d_real_inode(struct dentry *dentry)
 	return d_backing_inode(d_real(dentry));
 }
 
-
 #endif	/* __LINUX_DCACHE_H */

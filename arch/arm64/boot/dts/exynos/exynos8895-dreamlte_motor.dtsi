@@ -15,10 +15,10 @@
 		haptic,model = <1>;
 		haptic,max_timeout = <10000>;
 		/* for multi-frequency */
-		haptic,multi_frequency = <5>;
-		/* frequency     alert low   mid   high  0 */
-		haptic,duty   = <31738 42317 33853 25390 28211>;
-		haptic,period = <48828 65104 52083 39062 43402>;
+		haptic,multi_frequency = <7>;
+		/* frequency     alert low   mid   high  0     press release */
+		haptic,duty   = <41503 48828 39063 29296 32551 37108 37108>;
+		haptic,period = <48828 65104 52083 39062 43402 39062 39062>;
 		haptic,reg2 = <0x82>;
 		haptic,pwm_id = <1>;
 		haptic,regulator_name = "VDD_MOTOR_3P3";

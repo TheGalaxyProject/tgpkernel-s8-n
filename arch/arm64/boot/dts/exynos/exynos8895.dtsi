@@ -3547,6 +3547,9 @@
 		reg = <0x0 0x14020000 0x10000>, <0x0 0x14100000 0x59800>,
 			 <0x0 0x14070000 0x8>, <0x0 0x141F0000 0x50>;
 		reg-names = "sfr", "sram", "dmic", "gpr";
+		#address-cells = <2>;
+		#size-cells = <1>;
+		ranges;
 		pinctrl-names = "dmic_default", "amic_default", "idle";
 		pinctrl-0 = <&dmic_bus_clk &dmic_pdm>;
 		pinctrl-1 = <&amic_bus_clk &amic_pdm>;
@@ -3559,20 +3562,21 @@
 		interrupt-parent = <&mailbox_vts>;
 		interrupts = <0>, <1>, <2>, <3>, <4>, <5>;
 		interrupt-names = "error", "boot_completed", "ipc_received", "voice_triggered", "trigger_period_elapsed", "record_period_elapsed";
-	};
+		vts_dma0: vts_dma@0x0 {
+			compatible = "samsung,vts-dma";
+			reg = <0x0 0x0 0x0>;
+			vts = <&vts>;
+			id = <0>;
+			type = "vts-trigger";
+		};
 
-	vts_dma0: vts_dma0 {
-		compatible = "samsung,vts-dma";
-		vts = <&vts>;
-		id = <0>;
-		type = "vts-trigger";
-	};
-
-	vts_dma1: vts_dma1 {
-		compatible = "samsung,vts-dma";
-		vts = <&vts>;
-		id = <1>;
-		type = "vts-record";
+		vts_dma1: vts_dma@0x1 {
+			compatible = "samsung,vts-dma";
+			reg = <0x0 0x1 0x0>;
+			vts = <&vts>;
+			id = <1>;
+			type = "vts-record";
+		};
 	};
 
 	pcie0@116A0000 {
@@ -4927,6 +4931,23 @@
 			input_booster,phase_times = <0 0>;
 		};
 		booster_key@9 {
+			input_booster,label = "PEN";
+			input_booster,type = <8>;	/* BOOSTER_DEVICE_MOUSE */
+
+			input_booster,levels = <1 2>;
+
+			/* Frequency table */
+			/* for level	:	1_Head 2_Tail*/
+			input_booster,cpu_freqs = <1469000 858000>;
+			input_booster,hmp_boost = <1 1>;
+			input_booster,kfc_freqs = <832000 832000>;
+			input_booster,bimc_freqs = <0 0>;
+
+			/* Time table */
+			input_booster,head_times = <200 0>;
+			input_booster,tail_times = <0 600>;
+		};
+		booster_key@10 {
 			input_booster,label = "KEY_TWO";
 			input_booster,type = <9>;	/* BOOSTER_DEVICE_KEY */
 

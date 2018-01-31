@@ -1259,14 +1259,14 @@
 				 "IN1AL", "DMIC",
 				 "DMIC", "MICBIAS1B",
 				 "IN2AL", "DMIC",
+				 "IN3L", "DMIC",
 				 "VTS PAD DPDM", "DMIC",
 				 "HEADPHONE", "HPOUT2L",
 				 "HEADPHONE", "HPOUT2R",
 				 "VOUTPUT", "ABOX UAIF0 Playback",
 				 "VOUTPUTCALL", "ABOX UAIF2 Playback",
 				 "ABOX UAIF2 Capture", "VINPUTCALL",
-				 "VTS Virtual Output", "VTS Virtual Output Mux",
-				 "VTS Virtual Output Mux", "DMIC";
+				 "VTS Virtual Output", "VTS Virtual Output Mux";
 
 		samsung,codec = <&abox &vts>;
 		samsung,aux = <&abox_effect>;

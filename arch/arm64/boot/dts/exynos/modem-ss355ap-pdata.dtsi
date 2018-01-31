@@ -85,6 +85,8 @@
 		sbi_ap_status_mask = <0xf>;
 		sbi_ap_status_pos = <1>;
 
+		sbi_crash_type_mask = <0xf>;
+		sbi_crash_type_pos = <23>;
 		sbi_device_type_mask = <0x1f>;
 		sbi_device_type_pos = <18>;
 		sbi_ext_backtrace_mask = <0x1>;
@@ -135,7 +137,7 @@
 			io_device_2 {
 				iod,name = "umts_rfs0";
 				iod,id = <245>;
-				iod,format = <1>;		/* IPC_RFS */
+				iod,format = <2>;		/* IPC_RFS */
 				iod,io_type = <0>;
 				iod,links = <0x200>;
 				iod,attrs = <0x82>;
@@ -386,7 +388,7 @@
 		shmem,ipc_offset = <0x8000000>; /* 128MB(CP 122MB + VSS 6MB) */
 		shmem,ipc_size = <0x500000>; /* 5MB */
 		shmem,zmb_offset = <0x8500000>; /* 133MB(CP 122MB + VSS 6MB + IPC 5MB) */
-		shmem,zmb_size = <0x900000>; /* 9MB */
+		shmem,zmb_size = <0xB00000>; /* 11MB */
 	};
 
 	mailbox_cp: mcu_ipc@15B40000 {

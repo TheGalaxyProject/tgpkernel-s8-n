@@ -46,6 +46,7 @@
 
 	hsi2c@10940000 { /* hsi2c_usi12_0 */
 		status = "okay";
+		samsung,stop-after-trans;
 		clock-frequency = <100000>;
 
 		mfc-charger@3b {
@@ -520,6 +521,3 @@
 		  };
 	};
 };
-
-
-
